@@ -1,0 +1,23 @@
+# For updates - regional pairings for geographies can be found here: https://learn.microsoft.com/en-us/azure/reliability/cross-region-replication-azure#azure-cross-region-replication-pairings-for-all-geographies
+
+australiasoutheast: australiaeast
+australiaeast: australiasoutheast
+canadacentral: canadaeast
+canadaeast: canadacentral
+centralindia: southindia
+centralus: eastus2
+eastasia: southeastasia
+eastus: westus
+japaneast: japanwest
+northeurope: westeurope
+northcentralus: southcentralus
+norwayeast: norwaywest # access-restricted to support specific customer scenarios
+southafricanorth: southafricawest # access-restricted to support specific customer scenarios
+southcentralus: northcentralus
+southeastasia: eastasia
+southindia: centralindia
+switzerlandnorth: switzerlandwest # access-restricted to support specific customer scenarios
+uksouth: ukwest
+ukwest: uksouth
+westeurope: northeurope
+westus: eastus
