@@ -8,7 +8,7 @@ azure_location=westeurope # TF_VAR_REGION i.e. westeurope
 cust_code=n1dr # n1dr in this case
 azure_reg=  # TF_VAR_REGION i.e. westeurope
 
-az_sub="78f95271-f9a8-4a75-9ce8-222e96323a7b"
+az_sub=""
 
 ## Standard Vars - Set Target Resource Group and New NIC Name
 
