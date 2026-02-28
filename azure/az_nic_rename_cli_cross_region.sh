@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# shellcheck disable=SC2154,SC2034
+
 ## Vars needed (input):
 placetype=u
 placenum_primary=1
@@ -18,9 +20,9 @@ vm_name_primary="${cust_code}-${placetype}${placenum_primary}-prd-db1"
 vm_name_secondary="${cust_code}-${placetype}${placenum_secondary}-prd-db1"
 network_rg_secondary="${cust_code}-${placetype}${placenum_secondary}p-network-rg"
 
-echo $vm_rg_primary
-echo $vm_rg_secondary
-echo $new_nic_name
+echo "$vm_rg_primary"
+echo "$vm_rg_secondary"
+echo "$new_nic_name"
 
 # Azure login and set subscription
 echo "********************************************"
@@ -33,23 +35,23 @@ az account set --subscription "${az_sub}"
 echo "********************************************"
 echo "Getting VM Details"
 echo "********************************************"
-az vm show -g $vm_rg_primary -n $vm_name_primary
-az vm show -g $vm_rg_secondary -n $vm_name_secondary
+az vm show -g "$vm_rg_primary" -n "$vm_name_primary"
+az vm show -g "$vm_rg_secondary" -n "$vm_name_secondary"
 
 # Get NIC associated with the VM
 echo "******************************************************"
 echo "Getting NIC details of VM ${vm_name_secondary}"
 echo "******************************************************"
 
-echo $vm_rg_secondary
-echo $vm_name_secondary
+echo "$vm_rg_secondary"
+echo "$vm_name_secondary"
 
 old_nic_id=$(az vm show -g $vm_rg_secondary -n $vm_name_secondary --query "networkProfile.networkInterfaces[].id" -otsv)
-echo $old_nic_id
+echo "$old_nic_id"
 old_nic_name=$(az network nic list --resource-group $vm_rg_secondary --query "[0].name" -otsv)
-echo $old_nic_name
+echo "$old_nic_name"
 
-az network nic show --resource-group $vm_rg_secondary --name $old_nic_name --ids $old_nic_id
+az network nic show --resource-group "$vm_rg_secondary" --name "$old_nic_name" --ids "$old_nic_id"
 
 # Stop the Azure VM if it is running
 echo "********************************************"
@@ -57,7 +59,7 @@ echo "Checking if VM is running"
 echo "********************************************"
 secondary_vm_status=$(az vm show -g "${vm_rg_secondary}" -n "${vm_name_secondary}" -d --query "powerState")
 
-if [[ $vm_status=='VM running' ]]; then
+if [[ "$vm_status" == "VM running" ]]; then
     echo "****************************************************************************************"
     echo "VM ${vm_name_secondary} is running - deallocating to allow for new NIC creation"
     echo "****************************************************************************************"
@@ -94,10 +96,10 @@ echo "********************************************"
 echo "Attempting to detach old NIC from VM"
 echo "********************************************"
 
-az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics $old_nic_name
-az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics $old_nic_id
-az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics $(az vm show -g $vm_rg_secondary -n $vm_name_secondary --query "networkProfile.networkInterfaces[].id" -otsv)
-az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics $(az network nic list --resource-group $vm_rg_secondary --query "[0].name" -otsv)
+az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics "$old_nic_name"
+az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics "$old_nic_id"
+az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics "$(az vm show -g $vm_rg_secondary -n $vm_name_secondary --query "networkProfile.networkInterfaces[].id" -otsv)"
+az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics "$(az network nic list --resource-group $vm_rg_secondary --query "[0].name" -otsv)"
 az vm nic remove -g $vm_rg_secondary --vm-name $vm_name_secondary --nics "/subscriptions/${az_sub}/resourceGroups/${vm_rg_secondary}/providers/Microsoft.Network/networkInterfaces/${old_nic_name}"
 
 # Attach the New NIC
@@ -105,17 +107,17 @@ echo "********************************************"
 echo "Attempting to attach new NIC to VM"
 echo "********************************************"
 
-az vm nic add -g "${vm_rg_secondary}" --vm-name "${vm_name_secondary}" --nics $new_nic_name
+az vm nic add -g "${vm_rg_secondary}" --vm-name "${vm_name_secondary}" --nics "$new_nic_name"
 
 # Detach the old NIC from the VM
 echo "********************************************"
 echo "Attempting to detach old NIC from VM"
 echo "********************************************"
 
-az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics $old_nic_name
-az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics $old_nic_id
-az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics $(az vm show -g $vm_rg_secondary -n $vm_name_secondary --query "networkProfile.networkInterfaces[].id" -otsv)
-az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics $(az network nic list --resource-group $vm_rg_secondary --query "[0].name" -otsv)
+az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics "$old_nic_name"
+az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics "$old_nic_id"
+az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics "$(az vm show -g $vm_rg_secondary -n $vm_name_secondary --query "networkProfile.networkInterfaces[].id" -otsv)"
+az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics "$(az network nic list --resource-group $vm_rg_secondary --query "[0].name" -otsv)"
 az vm nic remove -g "${vm_rg_secondary}" --vm-name $vm_name_secondary --nics "/subscriptions/${az_sub}/resourceGroups/${vm_rg_secondary}/providers/Microsoft.Network/networkInterfaces/${old_nic_name}"
 
 # Delete the old NIC
